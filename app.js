@@ -1,12 +1,3 @@
-const starterListings = [
-  { id: "demo-1", kind: "looking", role: "มือกลอง / Pop-Rock", area: "อารีย์ · กรุงเทพฯ", date: "2026-10-24", time: "20:00", endTime: "23:00", rate: "2,500 บาท / คืน", details: "หามือกลองเล่นประจำร้าน เพลงไทยยุค 2000 ซ้อมก่อนงาน 1 ครั้ง", contact: "ทัก Facebook: Room 44", age: "12 นาทีที่แล้ว" },
-  { id: "demo-2", kind: "available", role: "นักร้องหญิง · Soul / R&B", area: "สุขุมวิท · กรุงเทพฯ", date: "2026-10-24", time: "19:30", endTime: "22:30", rate: "เริ่ม 3,000 บาท", details: "มีประสบการณ์ร้านอาหารและงาน private มีคลิปผลงานส่งให้ดูได้", contact: "Line: mellowmay", age: "28 นาทีที่แล้ว" },
-  { id: "demo-3", kind: "looking", role: "มือเบส · Indie Pop", area: "นนทบุรี", date: "2026-10-25", time: "18:00", endTime: "21:00", rate: "1,800 บาท + อาหาร", details: "วงมีงานอีเวนต์วันอาทิตย์ ขอคนตรงเวลาและมีอุปกรณ์ส่วนตัว", contact: "Inbox: Sunday Club", age: "1 ชั่วโมงที่แล้ว" },
-  { id: "demo-4", kind: "available", role: "มือคีย์บอร์ด / เปียโน", area: "ลาดพร้าว · กรุงเทพฯ", date: "2026-10-25", time: "17:00", endTime: "20:00", rate: "คุยกันได้", details: "เล่น Pop, Jazz และเพลงงานแต่ง อ่าน lead sheet ได้", contact: "Line: keys.nut", age: "2 ชั่วโมงที่แล้ว" },
-  { id: "demo-5", kind: "looking", role: "Trio แจ๊ส · งานโรงแรม", area: "ปทุมวัน · กรุงเทพฯ", date: "2026-10-26", time: "20:30", endTime: "23:30", rate: "6,000 บาท / วง", details: "หาวง trio เล่น 2 เซต เซตละ 45 นาที มีเครื่องเสียงให้", contact: "ทักเพจ: Blue Note Bar", age: "3 ชั่วโมงที่แล้ว" },
-  { id: "demo-6", kind: "available", role: "มือกีตาร์ · Acoustic", area: "เชียงใหม่", date: "2026-10-26", time: "16:00", endTime: "19:00", rate: "2,000 บาทขึ้นไป", details: "รับงานร้านและ private event เล่นได้ทั้ง fingerstyle และร้องนำ", contact: "โทร 08x-xxx-xxxx", age: "เมื่อวาน" },
-];
-
 const storageKey = "queuewang-listings-v1";
 const databaseConfig = window.QUEUEWANG_SUPABASE || {};
 const databaseUrl = String(databaseConfig.url || "").replace(/\/$/, "");
@@ -40,9 +31,12 @@ let databasePhotoSupported = true;
 function loadListings() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
-    return Array.isArray(saved) ? [...saved, ...starterListings] : starterListings;
+    if (!Array.isArray(saved)) return [];
+    const userListings = saved.filter((item) => !String(item.id).startsWith("demo-"));
+    if (userListings.length !== saved.length) localStorage.setItem(storageKey, JSON.stringify(userListings));
+    return userListings;
   } catch {
-    return starterListings;
+    return [];
   }
 }
 
@@ -103,8 +97,8 @@ async function loadDatabaseListings() {
   const rows = await response.json();
   const remoteListings = rows.map(mapDatabaseRow);
   const remoteIds = new Set(remoteListings.map((item) => item.id));
-  const localOnlyListings = listings.filter((item) => !String(item.id).startsWith("demo-") && !remoteIds.has(item.id));
-  listings = [...remoteListings, ...localOnlyListings, ...starterListings];
+  const localOnlyListings = listings.filter((item) => !remoteIds.has(item.id));
+  listings = [...remoteListings, ...localOnlyListings];
   if (databaseTimeSupported && databasePhotoSupported) databaseStatus.textContent = "เชื่อมฐานข้อมูลแล้ว · แชร์ประกาศร่วมกัน";
   render();
 }
@@ -279,6 +273,7 @@ function render() {
   grid.hidden = filtered.length === 0;
   emptyState.hidden = filtered.length > 0;
   count.textContent = String(filtered.length).padStart(2, "0");
+  document.querySelector("#total-count").textContent = String(listings.length).padStart(2, "0");
   const timeSummary = timeFrom && timeTo ? `${timeFrom}–${timeTo} น.` : timeFrom ? `ตั้งแต่ ${timeFrom} น.` : timeTo ? `ถึง ${timeTo} น.` : "";
   filterSummary.textContent = date && timeSummary ? `ประกาศวันที่ ${formatDate(date)} · ${timeSummary}` : timeSummary ? `ประกาศ ${timeSummary}` : date ? `ประกาศวันที่ ${formatDate(date)}` : query ? `ผลการค้นหา “${searchInput.value.trim()}”` : selectedKind === "looking" ? "ประกาศหาคนร่วมงาน" : selectedKind === "available" ? "ประกาศคนว่างรับงาน" : "ประกาศทั้งหมด";
 }
