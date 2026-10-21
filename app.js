@@ -28,6 +28,28 @@ let toastTimer;
 let databaseTimeSupported = true;
 let databasePhotoSupported = true;
 
+if (location.hostname.endsWith(".github.io")) {
+  const versionStorageKey = "queuewang-deployment-version";
+  const versionUrl = new URL("queuewang-version.json", document.baseURI);
+
+  async function checkForDeploymentUpdate() {
+    try {
+      const response = await fetch(`${versionUrl}?check=${Date.now()}`, { cache: "no-store" });
+      if (!response.ok) return;
+      const { version } = await response.json();
+      if (!version) return;
+      const currentVersion = sessionStorage.getItem(versionStorageKey);
+      sessionStorage.setItem(versionStorageKey, version);
+      if (currentVersion && currentVersion !== version) location.reload();
+    } catch {
+      return;
+    }
+  }
+
+  checkForDeploymentUpdate();
+  window.setInterval(checkForDeploymentUpdate, 120000);
+}
+
 function loadListings() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));

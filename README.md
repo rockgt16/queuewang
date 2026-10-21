@@ -16,6 +16,8 @@
 
 workflow ใช้ GitHub Pages artifact ไม่ต้องมี build server หรือค่าโฮสติ้ง
 
+หน้าเว็บจะเช็ก deployment version ทุก 2 นาทีและ reload tab ที่เปิดค้างเมื่อมีรุ่นใหม่ พร้อมใส่ commit hash ใน URL ของ CSS/JavaScript เพื่อเลี่ยง asset cache เก่า
+
 ## เชื่อมฐานข้อมูลฟรีด้วย Supabase
 
 1. สร้าง project ใน [Supabase](https://supabase.com/) โดยเริ่มจาก Free plan
