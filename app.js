@@ -132,6 +132,17 @@ function formatDate(value) {
   return new Intl.DateTimeFormat("th-TH", { day: "numeric", month: "short", year: "numeric" }).format(new Date(`${value}T12:00:00`));
 }
 
+function bangkokDateValue() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 function formatTime(value) {
   return value ? `${value.slice(0, 5)} น.` : "เวลาไม่ระบุ";
 }
@@ -220,7 +231,7 @@ dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
 });
 
-form.elements.date.min = new Date().toISOString().slice(0, 10);
+form.elements.date.min = bangkokDateValue();
 form.elements.time.value = "19:00";
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -257,7 +268,7 @@ form.addEventListener("submit", async (event) => {
     timeToFilter.value = "";
     document.querySelector('[data-kind="all"]').click();
     form.reset();
-    form.elements.date.min = new Date().toISOString().slice(0, 10);
+    form.elements.date.min = bangkokDateValue();
     form.elements.time.value = "19:00";
     dialog.close();
     showToast(databaseReady ? "ลงประกาศแล้ว · แชร์ให้ทุกคนเห็น" : "ลงประกาศแล้ว · บันทึกไว้ในเบราว์เซอร์นี้");

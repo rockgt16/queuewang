@@ -31,7 +31,7 @@ create policy "Anyone can create gig posts"
   on public.gig_posts for insert
   to anon
   with check (
-    work_date >= current_date
+    work_date >= (now() at time zone 'Asia/Bangkok')::date
     and work_time is not null
     and char_length(role) between 1 and 60
     and char_length(area) between 1 and 60
