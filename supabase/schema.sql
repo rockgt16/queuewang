@@ -4,11 +4,14 @@ create table if not exists public.gig_posts (
   role text not null check (char_length(role) between 1 and 60),
   area text not null check (char_length(area) between 1 and 60),
   work_date date not null,
+  work_time time,
   rate text not null default 'คุยกันได้' check (char_length(rate) <= 50),
   details text not null default '' check (char_length(details) <= 240),
   contact text not null check (char_length(contact) between 1 and 100),
   created_at timestamptz not null default now()
 );
+
+alter table public.gig_posts add column if not exists work_time time;
 
 create index if not exists gig_posts_work_date_idx on public.gig_posts (work_date);
 create index if not exists gig_posts_created_at_idx on public.gig_posts (created_at desc);
@@ -29,6 +32,7 @@ create policy "Anyone can create gig posts"
   to anon
   with check (
     work_date >= current_date
+    and work_time is not null
     and char_length(role) between 1 and 60
     and char_length(area) between 1 and 60
     and char_length(contact) between 1 and 100

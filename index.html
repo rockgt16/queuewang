@@ -58,8 +58,14 @@
             <button class="filter-tab" data-kind="available" aria-pressed="false">ว่างรับงาน</button>
           </div>
           <div class="filter-controls">
-            <label class="search-field"><span class="sr-only">ค้นหาตำแหน่งหรือพื้นที่</span><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="ค้นหาตำแหน่ง / พื้นที่" autocomplete="off" /></label>
+            <label class="search-field"><span class="sr-only">ค้นหาตำแหน่ง พื้นที่ หรือเวลา</span><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="ค้นหาตำแหน่ง / พื้นที่ / เวลา" autocomplete="off" /></label>
             <label class="date-field"><span class="sr-only">กรองตามวันที่</span><span aria-hidden="true">▦</span><input id="date-filter" type="date" /></label>
+            <div class="time-range-field" role="group" aria-label="กรองตามช่วงเวลา">
+              <span aria-hidden="true">◷</span>
+              <input id="time-from-filter" type="time" aria-label="ตั้งแต่เวลา" />
+              <span class="time-separator" aria-hidden="true">–</span>
+              <input id="time-to-filter" type="time" aria-label="ถึงเวลา" />
+            </div>
           </div>
         </div>
 
@@ -72,16 +78,17 @@
       <section class="about-strip" id="how-it-works"><span class="about-number">โน้ต 01</span><p>ลงคิวที่ว่างไว้ หรือบอกเราว่ากำลังหาใคร<br /><strong>ที่เหลือปล่อยให้เพลงพาไป</strong></p><button class="button button-lime" data-open-form>เริ่มลงประกาศ <span>↗</span></button></section>
     </main>
 
-    <footer class="site-footer"><a class="wordmark footer-wordmark" href="#top"><span class="wordmark-icon">ค</span><span>คิวว่าง<span class="wordmark-period">.</span></span></a><span>ทำขึ้นเพื่อคนทำเพลงและคนที่รักเสียงดนตรี</span><span class="footer-free">FREE TO PLAY <span>●</span></span></footer>
+    <footer class="site-footer"><a class="wordmark footer-wordmark" href="#top"><span class="wordmark-icon">น</span><span>นักดนตรีโคราช<span class="wordmark-period">.</span></span></a><span>ทำขึ้นเพื่อคนทำเพลงและคนที่รักเสียงดนตรี</span><span class="footer-free">FREE TO PLAY <span>●</span></span></footer>
 
     <dialog class="post-dialog" id="post-dialog" aria-labelledby="form-title">
       <form id="post-form">
         <div class="dialog-top"><div><p class="eyebrow section-eyebrow">ADD TO THE BOARD</p><h2 id="form-title">ลงประกาศ</h2></div><button class="close-button" type="button" aria-label="ปิด" data-close-form>×</button></div>
         <fieldset class="type-picker"><legend>คุณกำลัง...</legend><label><input type="radio" name="kind" value="looking" checked /><span>หาคนร่วมงาน</span></label><label><input type="radio" name="kind" value="available" /><span>ว่างรับงาน</span></label></fieldset>
         <label class="form-label">ตำแหน่ง / เครื่องดนตรี<input name="role" required maxlength="60" placeholder="เช่น มือกลอง, นักร้อง, วงดนตรี" /></label>
-        <div class="form-row"><label class="form-label">พื้นที่<input name="area" required maxlength="60" placeholder="เช่น อารีย์, เชียงใหม่" /></label><label class="form-label">วันที่<input name="date" type="date" required /></label></div>
+        <label class="form-label">พื้นที่<input name="area" required maxlength="60" placeholder="เช่น อารีย์, เชียงใหม่" /></label>
+        <div class="form-row"><label class="form-label">วันที่<input name="date" type="date" required /></label><label class="form-label">เวลาเริ่มงาน<input name="time" type="time" required /></label></div>
         <label class="form-label">ค่าจ้างโดยประมาณ<input name="rate" maxlength="50" placeholder="เช่น 2,000 บาท / คุยกันได้" /></label>
-        <label class="form-label">รายละเอียด<textarea name="details" rows="3" maxlength="240" placeholder="แนวเพลง เวลา หรือรายละเอียดที่อยากบอก"></textarea></label>
+        <label class="form-label">รายละเอียด<textarea name="details" rows="3" maxlength="240" placeholder="แนวเพลง หรือรายละเอียดที่อยากบอก"></textarea></label>
         <label class="form-label">ช่องทางติดต่อ<input name="contact" required maxlength="100" placeholder="Facebook / Line / เบอร์โทร" /></label>
         <p class="form-note" id="form-note">เมื่อตั้งค่าฐานข้อมูลแล้ว ประกาศจะมองเห็นได้โดยทุกคน ข้อมูลติดต่อจะเป็นสาธารณะ</p>
         <div class="dialog-actions"><button class="button button-outline" type="button" data-close-form>ยกเลิก</button><button class="button button-dark" type="submit">ลงประกาศ <span>↗</span></button></div>
