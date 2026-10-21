@@ -89,6 +89,8 @@
         <div class="form-row"><label class="form-label">วันที่<input name="date" type="date" required /></label><label class="form-label">เวลาเริ่มงาน<input name="time" type="time" required /></label></div>
         <label class="form-label">เวลาเลิกงาน<input name="endTime" type="time" required /></label>
         <label class="form-label">ค่าจ้างโดยประมาณ<input name="rate" maxlength="50" placeholder="เช่น 2,000 บาท / คุยกันได้" /></label>
+        <label class="form-label">รูปถ่าย (JPEG, PNG หรือ WebP ไม่เกิน 3 MB)<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" /></label>
+        <div class="photo-preview" id="photo-preview" hidden><img id="photo-preview-image" alt="ตัวอย่างรูปที่จะลงประกาศ" /><button class="text-button" id="remove-photo" type="button">เอารูปออก <span>×</span></button></div>
         <label class="form-label">รายละเอียด<textarea name="details" rows="3" maxlength="240" placeholder="แนวเพลง หรือรายละเอียดที่อยากบอก"></textarea></label>
         <label class="form-label">ช่องทางติดต่อ<input name="contact" required maxlength="100" placeholder="Facebook / Line / เบอร์โทร" /></label>
         <p class="form-note" id="form-note">เมื่อตั้งค่าฐานข้อมูลแล้ว ประกาศจะมองเห็นได้โดยทุกคน ข้อมูลติดต่อจะเป็นสาธารณะ</p>

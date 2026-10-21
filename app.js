@@ -26,10 +26,16 @@ const toast = document.querySelector("#toast");
 const databaseStatus = document.querySelector("#database-status");
 const formNote = document.querySelector("#form-note");
 const formError = document.querySelector("#form-error");
+const photoInput = form.elements.photo;
+const photoPreview = document.querySelector("#photo-preview");
+const photoPreviewImage = document.querySelector("#photo-preview-image");
 const submitButton = form.querySelector('button[type="submit"]');
+const maxPhotoBytes = 3 * 1024 * 1024;
+const allowedPhotoTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 let selectedKind = "all";
 let toastTimer;
 let databaseTimeSupported = true;
+let databasePhotoSupported = true;
 
 function loadListings() {
   try {
@@ -56,6 +62,7 @@ function mapDatabaseRow(row) {
     date: row.work_date,
     time: row.work_time ? row.work_time.slice(0, 5) : "",
     endTime: row.work_end_time ? row.work_end_time.slice(0, 5) : "",
+    photoUrl: row.photo_url || "",
     rate: row.rate,
     details: row.details,
     contact: row.contact,
@@ -74,27 +81,49 @@ function relativeAge(value) {
 
 async function loadDatabaseListings() {
   const headers = { apikey: databaseKey, Authorization: `Bearer ${databaseKey}` };
-  const endpoint = `${databaseUrl}/rest/v1/gig_posts?select=id,kind,role,area,work_date,work_time,work_end_time,rate,details,contact,created_at&order=created_at.desc`;
+  const endpoint = `${databaseUrl}/rest/v1/gig_posts?select=id,kind,role,area,work_date,work_time,work_end_time,photo_url,rate,details,contact,created_at&order=created_at.desc`;
   let response = await fetch(endpoint, { headers });
   if (!response.ok) {
-    const legacyEndpoint = `${databaseUrl}/rest/v1/gig_posts?select=id,kind,role,area,work_date,rate,details,contact,created_at&order=created_at.desc`;
-    response = await fetch(legacyEndpoint, { headers });
-    if (!response.ok) throw new Error(`โหลดประกาศไม่สำเร็จ (${response.status})`);
-    databaseTimeSupported = false;
-    databaseStatus.textContent = "ฐานข้อมูลยังไม่อัปเดต · รัน schema.sql เพื่อใช้เวลา";
-    formNote.textContent = "ต้องอัปเดตฐานข้อมูลก่อนลงประกาศที่ระบุเวลา กรุณารัน supabase/schema.sql";
+    const withoutPhotoEndpoint = `${databaseUrl}/rest/v1/gig_posts?select=id,kind,role,area,work_date,work_time,work_end_time,rate,details,contact,created_at&order=created_at.desc`;
+    response = await fetch(withoutPhotoEndpoint, { headers });
+    if (response.ok) {
+      databasePhotoSupported = false;
+      databaseStatus.textContent = "ฐานข้อมูลยังไม่อัปเดต · รัน schema.sql เพื่อใช้รูป";
+      formNote.textContent = "ต้องอัปเดตฐานข้อมูลก่อนแนบรูป กรุณารัน supabase/schema.sql";
+    } else {
+      const legacyEndpoint = `${databaseUrl}/rest/v1/gig_posts?select=id,kind,role,area,work_date,rate,details,contact,created_at&order=created_at.desc`;
+      response = await fetch(legacyEndpoint, { headers });
+      if (!response.ok) throw new Error(`โหลดประกาศไม่สำเร็จ (${response.status})`);
+      databaseTimeSupported = false;
+      databasePhotoSupported = false;
+      databaseStatus.textContent = "ฐานข้อมูลยังไม่อัปเดต · รัน schema.sql";
+      formNote.textContent = "ต้องอัปเดตฐานข้อมูลก่อนลงประกาศที่ระบุเวลา/รูป กรุณารัน supabase/schema.sql";
+    }
   }
   const rows = await response.json();
   const remoteListings = rows.map(mapDatabaseRow);
   const remoteIds = new Set(remoteListings.map((item) => item.id));
   const localOnlyListings = listings.filter((item) => !String(item.id).startsWith("demo-") && !remoteIds.has(item.id));
   listings = [...remoteListings, ...localOnlyListings, ...starterListings];
-  if (databaseTimeSupported) databaseStatus.textContent = "เชื่อมฐานข้อมูลแล้ว · แชร์ประกาศร่วมกัน";
+  if (databaseTimeSupported && databasePhotoSupported) databaseStatus.textContent = "เชื่อมฐานข้อมูลแล้ว · แชร์ประกาศร่วมกัน";
   render();
 }
 
 async function saveDatabaseListing(listing) {
   if (!databaseTimeSupported) throw new Error("ต้องรัน supabase/schema.sql ก่อนลงประกาศที่มีเวลา");
+  if (!databasePhotoSupported && listing.photoUrl) throw new Error("ต้องรัน supabase/schema.sql ก่อนแนบรูป");
+  const payload = {
+    kind: listing.kind,
+    role: listing.role,
+    area: listing.area,
+    work_date: listing.date,
+    work_time: listing.time,
+    work_end_time: listing.endTime,
+    rate: listing.rate,
+    details: listing.details,
+    contact: listing.contact,
+  };
+  if (databasePhotoSupported) payload.photo_url = listing.photoUrl || null;
   const response = await fetch(`${databaseUrl}/rest/v1/gig_posts`, {
     method: "POST",
     headers: {
@@ -103,17 +132,7 @@ async function saveDatabaseListing(listing) {
       "Content-Type": "application/json",
       Prefer: "return=representation",
     },
-    body: JSON.stringify({
-      kind: listing.kind,
-      role: listing.role,
-      area: listing.area,
-      work_date: listing.date,
-      work_time: listing.time,
-      work_end_time: listing.endTime,
-      rate: listing.rate,
-      details: listing.details,
-      contact: listing.contact,
-    }),
+    body: JSON.stringify(payload),
   });
   if (!response.ok) {
     let detail = `HTTP ${response.status}`;
@@ -127,6 +146,30 @@ async function saveDatabaseListing(listing) {
   }
   const [savedRow] = await response.json();
   return mapDatabaseRow(savedRow);
+}
+
+async function uploadPhoto(file) {
+  const extension = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" }[file.type];
+  if (!databaseReady) throw new Error("ต้องเชื่อม Supabase ก่อนอัปโหลดรูป");
+  if (!databasePhotoSupported) throw new Error("ต้องรัน supabase/schema.sql ก่อนแนบรูป");
+  if (!extension || !allowedPhotoTypes.has(file.type)) throw new Error("รองรับเฉพาะ JPEG, PNG หรือ WebP");
+  if (file.size > maxPhotoBytes) throw new Error("รูปต้องมีขนาดไม่เกิน 3 MB");
+  const path = `${crypto.randomUUID()}.${extension}`;
+  const response = await fetch(`${databaseUrl}/storage/v1/object/gig-photos/${path}`, {
+    method: "POST",
+    headers: {
+      apikey: databaseKey,
+      Authorization: `Bearer ${databaseKey}`,
+      "Content-Type": file.type,
+      "x-upsert": "false",
+    },
+    body: file,
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(`อัปโหลดรูปไม่สำเร็จ: ${error.message || `HTTP ${response.status}`}`);
+  }
+  return `${databaseUrl}/storage/v1/object/public/gig-photos/${path}`;
 }
 
 function formatDate(value) {
@@ -179,6 +222,7 @@ function listingCard(item, index) {
   const label = isLooking ? "กำลังหาคนร่วมงาน" : "ว่างรับงาน";
   const safeContact = escapeHtml(item.contact);
   return `<article class="listing-card" style="animation-delay:${Math.min(index, 8) * 35}ms">
+    ${item.photoUrl ? `<img class="listing-photo" src="${escapeHtml(item.photoUrl)}" alt="รูปประกอบ ${escapeHtml(item.role)}" loading="lazy" />` : ""}
     <div><div class="card-topline"><span class="tag ${isLooking ? "tag-looking" : "tag-available"}"><span class="tag-symbol">${isLooking ? "↗" : "♪"}</span>${label}</span><span class="card-age">${escapeHtml(item.age || "เมื่อสักครู่")}</span></div>
       <h3>${escapeHtml(item.role)}</h3><p class="card-detail">${escapeHtml(item.area)}${item.details ? ` · ${escapeHtml(item.details)}` : ""}</p></div>
     <div class="card-bottom"><span class="card-date">▦ ${formatDate(item.date)} · ${formatTime(item.time)}${item.endTime ? `–${formatTime(item.endTime)}` : ""}</span><span class="card-rate">${escapeHtml(item.rate || "คุยกันได้")}</span></div>
@@ -247,6 +291,35 @@ dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
 });
 
+let photoPreviewUrl = "";
+photoInput.addEventListener("change", () => {
+  const file = photoInput.files[0];
+  formError.hidden = true;
+  if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+  photoPreviewUrl = "";
+  if (!file) {
+    photoPreview.hidden = true;
+    return;
+  }
+  if (!allowedPhotoTypes.has(file.type) || file.size > maxPhotoBytes) {
+    formError.textContent = file.size > maxPhotoBytes ? "รูปต้องมีขนาดไม่เกิน 3 MB" : "รองรับเฉพาะ JPEG, PNG หรือ WebP";
+    formError.hidden = false;
+    photoInput.value = "";
+    photoPreview.hidden = true;
+    return;
+  }
+  photoPreviewUrl = URL.createObjectURL(file);
+  photoPreviewImage.src = photoPreviewUrl;
+  photoPreview.hidden = false;
+});
+
+document.querySelector("#remove-photo").addEventListener("click", () => {
+  photoInput.value = "";
+  photoPreview.hidden = true;
+  if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+  photoPreviewUrl = "";
+});
+
 form.elements.date.min = bangkokDateValue();
 form.elements.time.value = "19:00";
 form.elements.endTime.value = "22:00";
@@ -268,12 +341,16 @@ form.addEventListener("submit", async (event) => {
     contact: values.get("contact").trim(),
     age: "เมื่อสักครู่",
   };
+  const photoFile = values.get("photo");
   submitButton.disabled = true;
   submitButton.textContent = databaseReady ? "กำลังบันทึก..." : "กำลังลงประกาศ...";
   try {
     let savedListing = listing;
     if (databaseReady) {
+      if (photoFile instanceof File && photoFile.size > 0) listing.photoUrl = await uploadPhoto(photoFile);
       savedListing = await saveDatabaseListing(listing);
+    } else if (photoFile instanceof File && photoFile.size > 0) {
+      throw new Error("ต้องเชื่อม Supabase Storage ก่อนจึงอัปโหลดรูปได้");
     } else {
       const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
       localStorage.setItem(storageKey, JSON.stringify([listing, ...saved]));
@@ -289,6 +366,10 @@ form.addEventListener("submit", async (event) => {
     form.elements.date.min = bangkokDateValue();
     form.elements.time.value = "19:00";
     form.elements.endTime.value = "22:00";
+    photoInput.value = "";
+    photoPreview.hidden = true;
+    if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+    photoPreviewUrl = "";
     dialog.close();
     showToast(databaseReady ? "ลงประกาศแล้ว · แชร์ให้ทุกคนเห็น" : "ลงประกาศแล้ว · บันทึกไว้ในเบราว์เซอร์นี้");
     document.querySelector("#board").scrollIntoView({ behavior: "smooth" });
