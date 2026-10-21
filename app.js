@@ -217,16 +217,51 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
 }
 
+function renderContact(value) {
+  const text = String(value || "");
+  const urlMatch = text.match(/https?:\/\/[^\s<>"']+|www\.[^\s<>"']+/i);
+  if (urlMatch) {
+    const rawUrl = urlMatch[0].replace(/[),.!?]+$/, "");
+    const href = rawUrl.startsWith("www.") ? `https://${rawUrl}` : rawUrl;
+    try {
+      const parsedUrl = new URL(href);
+      if (parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:") {
+        const start = text.indexOf(rawUrl);
+        const before = escapeHtml(text.slice(0, start));
+        const after = escapeHtml(text.slice(start + rawUrl.length));
+        return `${before}<a href="${escapeHtml(parsedUrl.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(rawUrl)}</a>${after}`;
+      }
+    } catch {
+      return escapeHtml(text);
+    }
+  }
+
+  const phoneMatch = text.match(/\+?\d[\d\s().-]{7,}\d/);
+  if (phoneMatch) {
+    const phoneText = phoneMatch[0].trim();
+    const phoneNumber = phoneText.replace(/[^\d+]/g, "");
+    const digitCount = phoneNumber.replace(/\D/g, "").length;
+    if (digitCount >= 9 && digitCount <= 15) {
+      const start = text.indexOf(phoneMatch[0]);
+      const before = escapeHtml(text.slice(0, start));
+      const after = escapeHtml(text.slice(start + phoneMatch[0].length));
+      return `${before}<a href="tel:${phoneNumber}">${escapeHtml(phoneText)}</a>${after}`;
+    }
+  }
+
+  return escapeHtml(text);
+}
+
 function listingCard(item, index) {
   const isLooking = item.kind === "looking";
   const label = isLooking ? "กำลังหาคนร่วมงาน" : "ว่างรับงาน";
-  const safeContact = escapeHtml(item.contact);
+  const contactContent = renderContact(item.contact);
   return `<article class="listing-card" style="animation-delay:${Math.min(index, 8) * 35}ms">
     ${item.photoUrl ? `<img class="listing-photo" src="${escapeHtml(item.photoUrl)}" alt="รูปประกอบ ${escapeHtml(item.role)}" loading="lazy" />` : ""}
     <div><div class="card-topline"><span class="tag ${isLooking ? "tag-looking" : "tag-available"}"><span class="tag-symbol">${isLooking ? "↗" : "♪"}</span>${label}</span><span class="card-age">${escapeHtml(item.age || "เมื่อสักครู่")}</span></div>
       <h3>${escapeHtml(item.role)}</h3><p class="card-detail">${escapeHtml(item.area)}${item.details ? ` · ${escapeHtml(item.details)}` : ""}</p></div>
     <div class="card-bottom"><span class="card-date">▦ ${formatDate(item.date)} · ${formatTime(item.time)}${item.endTime ? `–${formatTime(item.endTime)}` : ""}</span><span class="card-rate">${escapeHtml(item.rate || "คุยกันได้")}</span></div>
-    <div class="card-contact">ติดต่อ: <span>${safeContact}</span></div>
+    <div class="card-contact">ติดต่อ: <span>${contactContent}</span></div>
   </article>`;
 }
 

@@ -92,7 +92,7 @@ a { color: inherit; text-decoration: none; }
 .card-detail { margin: 0; color: #72756b; font-size: 11px; line-height: 1.7; }
 .card-bottom { margin-top: 14px; padding-top: 12px; border-top: 1px solid #e4e4dc; }
 .card-date, .card-rate { font: 10px var(--mono); }.card-date { color: #5c5f55; }.card-rate { color: #7c843e; text-align: right; }
-.card-contact { display: inline-flex; align-items: center; gap: 5px; color: #56594f; font-size: 10px; }.card-contact:hover { color: #78852f; }
+.card-contact { display: inline-flex; align-items: center; gap: 5px; color: #56594f; font-size: 10px; }.card-contact a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }.card-contact a:hover { color: #78852f; }
 .empty-state { padding: 56px 20px; text-align: center; border: 1px solid var(--line); border-top: 0; }
 .empty-state[hidden] { display: none; }.empty-symbol { font: 34px var(--mono); color: #999b91; }.empty-state h3 { margin: 9px 0 3px; font-size: 17px; }.empty-state p { margin: 0; color: var(--muted); font-size: 12px; }
 .text-button { margin-top: 16px; padding: 5px; border: 0; background: none; font-size: 12px; cursor: pointer; }.text-button span { margin-left: 5px; }
