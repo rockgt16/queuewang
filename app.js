@@ -32,7 +32,10 @@ function loadListings() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
     if (!Array.isArray(saved)) return [];
-    const userListings = saved.filter((item) => !String(item.id).startsWith("demo-"));
+    const userListings = saved.filter((item) => {
+      const id = String(item?.id || "");
+      return !id.startsWith("demo-") && !id.startsWith("local-");
+    });
     if (userListings.length !== saved.length) localStorage.setItem(storageKey, JSON.stringify(userListings));
     return userListings;
   } catch {
