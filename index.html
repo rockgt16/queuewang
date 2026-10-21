@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f3ec" />
+    <meta name="description" content="พื้นที่จับคู่งานดนตรีกับคนทำงาน ค้นหาตามวัน พื้นที่ และตำแหน่ง" />
+    <title>คิวว่าง | งานดนตรีใกล้ตัว</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="#top" aria-label="คิวว่าง หน้าหลัก"><span class="wordmark-icon">ค</span><span>คิวว่าง<span class="wordmark-period">.</span></span></a>
+      <nav class="top-nav" aria-label="เมนูหลัก">
+        <a class="nav-active" href="#board">กระดานงาน</a>
+        <a href="#how-it-works">เกี่ยวกับ</a>
+      </nav>
+      <button class="button button-dark top-post" data-open-form><span aria-hidden="true">+</span> ลงประกาศ</button>
+    </header>
+
+    <main id="top">
+      <section class="intro" aria-labelledby="page-title">
+        <div class="intro-copy">
+          <p class="eyebrow"><span class="live-dot"></span> MUSICIAN GIG BOARD <span class="eyebrow-date">/ BANGKOK & BEYOND</span></p>
+          <h1 id="page-title">มีคิวว่าง?<br /><span>มาเจอกัน</span></h1>
+          <p class="intro-text">พื้นที่เล็ก ๆ ให้คนหาวงเจอคนหางาน<br class="desktop-break" /> ไม่ต้องเลื่อนหาโพสต์จนตาลาย</p>
+          <a class="scroll-link" href="#board"><span class="scroll-arrow">↓</span> ดูประกาศล่าสุด</a>
+        </div>
+        <div class="intro-art" aria-hidden="true">
+          <div class="art-note note-one">♪</div>
+          <div class="art-note note-two">♫</div>
+          <div class="art-sun"></div>
+          <div class="art-line line-one"></div><div class="art-line line-two"></div><div class="art-line line-three"></div>
+          <div class="art-caption">GOOD PEOPLE<br />MAKE GOOD MUSIC</div>
+          <div class="art-stamp">BKK<br /><span>LIVE</span></div>
+        </div>
+        <div class="intro-index"><span>01</span><span class="index-rule"></span><span>03</span></div>
+      </section>
+
+      <section class="board" id="board" aria-labelledby="board-title">
+        <div class="board-heading">
+          <div>
+            <p class="eyebrow section-eyebrow">THE NOTICEBOARD <span>/ อัปเดตเรื่อย ๆ</span></p>
+            <h2 id="board-title">งานที่กำลังหา <span id="result-count">0</span></h2>
+          </div>
+          <button class="button button-outline desktop-post" data-open-form><span aria-hidden="true">+</span> ลงประกาศของคุณ</button>
+        </div>
+
+        <div class="filters" role="search">
+          <div class="filter-tabs" role="group" aria-label="ประเภทประกาศ">
+            <button class="filter-tab is-selected" data-kind="all" aria-pressed="true">ทั้งหมด <span>06</span></button>
+            <button class="filter-tab" data-kind="looking" aria-pressed="false">หาคนร่วมงาน</button>
+            <button class="filter-tab" data-kind="available" aria-pressed="false">ว่างรับงาน</button>
+          </div>
+          <div class="filter-controls">
+            <label class="search-field"><span class="sr-only">ค้นหาตำแหน่งหรือพื้นที่</span><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="ค้นหาตำแหน่ง / พื้นที่" autocomplete="off" /></label>
+            <label class="date-field"><span class="sr-only">กรองตามวันที่</span><span aria-hidden="true">▦</span><input id="date-filter" type="date" /></label>
+          </div>
+        </div>
+
+        <div class="board-meta"><span id="filter-summary">ประกาศทั้งหมด</span><span class="sort-label"><span class="live-dot"></span> ใหม่ล่าสุดก่อน</span></div>
+        <div class="listing-grid" id="listing-grid" aria-live="polite"></div>
+        <div class="empty-state" id="empty-state" hidden><span class="empty-symbol">∅</span><h3>ยังไม่เจอคิวนี้</h3><p>ลองเปลี่ยนคำค้น หรือเลือกวันที่อื่นดูนะ</p><button class="text-button" id="clear-filters">ล้างตัวกรอง <span>↗</span></button></div>
+        <div class="board-footer"><span>ทุกจังหวะ เริ่มจากการเจอกัน</span><span class="footer-mark">คิวว่าง. <span>2026</span></span></div>
+      </section>
+
+      <section class="about-strip" id="how-it-works"><span class="about-number">โน้ต 01</span><p>ลงคิวที่ว่างไว้ หรือบอกเราว่ากำลังหาใคร<br /><strong>ที่เหลือปล่อยให้เพลงพาไป</strong></p><button class="button button-lime" data-open-form>เริ่มลงประกาศ <span>↗</span></button></section>
+    </main>
+
+    <footer class="site-footer"><a class="wordmark footer-wordmark" href="#top"><span class="wordmark-icon">ค</span><span>คิวว่าง<span class="wordmark-period">.</span></span></a><span>ทำขึ้นเพื่อคนทำเพลงและคนที่รักเสียงดนตรี</span><span class="footer-free">FREE TO PLAY <span>●</span></span></footer>
+
+    <dialog class="post-dialog" id="post-dialog" aria-labelledby="form-title">
+      <form id="post-form">
+        <div class="dialog-top"><div><p class="eyebrow section-eyebrow">ADD TO THE BOARD</p><h2 id="form-title">ลงประกาศ</h2></div><button class="close-button" type="button" aria-label="ปิด" data-close-form>×</button></div>
+        <fieldset class="type-picker"><legend>คุณกำลัง...</legend><label><input type="radio" name="kind" value="looking" checked /><span>หาคนร่วมงาน</span></label><label><input type="radio" name="kind" value="available" /><span>ว่างรับงาน</span></label></fieldset>
+        <label class="form-label">ตำแหน่ง / เครื่องดนตรี<input name="role" required maxlength="60" placeholder="เช่น มือกลอง, นักร้อง, วงดนตรี" /></label>
+        <div class="form-row"><label class="form-label">พื้นที่<input name="area" required maxlength="60" placeholder="เช่น อารีย์, เชียงใหม่" /></label><label class="form-label">วันที่<input name="date" type="date" required /></label></div>
+        <label class="form-label">ค่าจ้างโดยประมาณ<input name="rate" maxlength="50" placeholder="เช่น 2,000 บาท / คุยกันได้" /></label>
+        <label class="form-label">รายละเอียด<textarea name="details" rows="3" maxlength="240" placeholder="แนวเพลง เวลา หรือรายละเอียดที่อยากบอก"></textarea></label>
+        <label class="form-label">ช่องทางติดต่อ<input name="contact" required maxlength="100" placeholder="Facebook / Line / เบอร์โทร" /></label>
+        <p class="form-note">เดโมนี้เก็บประกาศไว้ในเบราว์เซอร์ของคุณเท่านั้น ยังไม่แสดงให้คนอื่นเห็น</p>
+        <div class="dialog-actions"><button class="button button-outline" type="button" data-close-form>ยกเลิก</button><button class="button button-dark" type="submit">ลงประกาศ <span>↗</span></button></div>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
