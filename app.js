@@ -25,6 +25,7 @@ const form = document.querySelector("#post-form");
 const toast = document.querySelector("#toast");
 const databaseStatus = document.querySelector("#database-status");
 const formNote = document.querySelector("#form-note");
+const formError = document.querySelector("#form-error");
 const submitButton = form.querySelector('button[type="submit"]');
 let selectedKind = "all";
 let toastTimer;
@@ -112,7 +113,16 @@ async function saveDatabaseListing(listing) {
       contact: listing.contact,
     }),
   });
-  if (!response.ok) throw new Error(`บันทึกไม่สำเร็จ (${response.status})`);
+  if (!response.ok) {
+    let detail = `HTTP ${response.status}`;
+    try {
+      const error = await response.json();
+      detail = error.message || error.details || error.hint || detail;
+    } catch {
+      detail = response.statusText || detail;
+    }
+    throw new Error(`บันทึกไม่สำเร็จ: ${detail}`);
+  }
   const [savedRow] = await response.json();
   return mapDatabaseRow(savedRow);
 }
@@ -214,6 +224,8 @@ form.elements.date.min = new Date().toISOString().slice(0, 10);
 form.elements.time.value = "19:00";
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  formError.hidden = true;
+  formError.textContent = "";
   const values = new FormData(form);
   const listing = {
     id: `local-${Date.now()}`,
@@ -251,6 +263,8 @@ form.addEventListener("submit", async (event) => {
     showToast(databaseReady ? "ลงประกาศแล้ว · แชร์ให้ทุกคนเห็น" : "ลงประกาศแล้ว · บันทึกไว้ในเบราว์เซอร์นี้");
     document.querySelector("#board").scrollIntoView({ behavior: "smooth" });
   } catch (error) {
+    formError.textContent = error.message;
+    formError.hidden = false;
     showToast(`${error.message} · ตรวจการตั้งค่า Supabase แล้วลองใหม่`);
   } finally {
     submitButton.disabled = false;
