@@ -1,10 +1,10 @@
 const starterListings = [
-  { id: "demo-1", kind: "looking", role: "มือกลอง / Pop-Rock", area: "อารีย์ · กรุงเทพฯ", date: "2026-10-24", time: "20:00", rate: "2,500 บาท / คืน", details: "หามือกลองเล่นประจำร้าน เพลงไทยยุค 2000 ซ้อมก่อนงาน 1 ครั้ง", contact: "ทัก Facebook: Room 44", age: "12 นาทีที่แล้ว" },
-  { id: "demo-2", kind: "available", role: "นักร้องหญิง · Soul / R&B", area: "สุขุมวิท · กรุงเทพฯ", date: "2026-10-24", time: "19:30", rate: "เริ่ม 3,000 บาท", details: "มีประสบการณ์ร้านอาหารและงาน private มีคลิปผลงานส่งให้ดูได้", contact: "Line: mellowmay", age: "28 นาทีที่แล้ว" },
-  { id: "demo-3", kind: "looking", role: "มือเบส · Indie Pop", area: "นนทบุรี", date: "2026-10-25", time: "18:00", rate: "1,800 บาท + อาหาร", details: "วงมีงานอีเวนต์วันอาทิตย์ ขอคนตรงเวลาและมีอุปกรณ์ส่วนตัว", contact: "Inbox: Sunday Club", age: "1 ชั่วโมงที่แล้ว" },
-  { id: "demo-4", kind: "available", role: "มือคีย์บอร์ด / เปียโน", area: "ลาดพร้าว · กรุงเทพฯ", date: "2026-10-25", time: "17:00", rate: "คุยกันได้", details: "เล่น Pop, Jazz และเพลงงานแต่ง อ่าน lead sheet ได้", contact: "Line: keys.nut", age: "2 ชั่วโมงที่แล้ว" },
-  { id: "demo-5", kind: "looking", role: "Trio แจ๊ส · งานโรงแรม", area: "ปทุมวัน · กรุงเทพฯ", date: "2026-10-26", time: "20:30", rate: "6,000 บาท / วง", details: "หาวง trio เล่น 2 เซต เซตละ 45 นาที มีเครื่องเสียงให้", contact: "ทักเพจ: Blue Note Bar", age: "3 ชั่วโมงที่แล้ว" },
-  { id: "demo-6", kind: "available", role: "มือกีตาร์ · Acoustic", area: "เชียงใหม่", date: "2026-10-26", time: "16:00", rate: "2,000 บาทขึ้นไป", details: "รับงานร้านและ private event เล่นได้ทั้ง fingerstyle และร้องนำ", contact: "โทร 08x-xxx-xxxx", age: "เมื่อวาน" },
+  { id: "demo-1", kind: "looking", role: "มือกลอง / Pop-Rock", area: "อารีย์ · กรุงเทพฯ", date: "2026-10-24", time: "20:00", endTime: "23:00", rate: "2,500 บาท / คืน", details: "หามือกลองเล่นประจำร้าน เพลงไทยยุค 2000 ซ้อมก่อนงาน 1 ครั้ง", contact: "ทัก Facebook: Room 44", age: "12 นาทีที่แล้ว" },
+  { id: "demo-2", kind: "available", role: "นักร้องหญิง · Soul / R&B", area: "สุขุมวิท · กรุงเทพฯ", date: "2026-10-24", time: "19:30", endTime: "22:30", rate: "เริ่ม 3,000 บาท", details: "มีประสบการณ์ร้านอาหารและงาน private มีคลิปผลงานส่งให้ดูได้", contact: "Line: mellowmay", age: "28 นาทีที่แล้ว" },
+  { id: "demo-3", kind: "looking", role: "มือเบส · Indie Pop", area: "นนทบุรี", date: "2026-10-25", time: "18:00", endTime: "21:00", rate: "1,800 บาท + อาหาร", details: "วงมีงานอีเวนต์วันอาทิตย์ ขอคนตรงเวลาและมีอุปกรณ์ส่วนตัว", contact: "Inbox: Sunday Club", age: "1 ชั่วโมงที่แล้ว" },
+  { id: "demo-4", kind: "available", role: "มือคีย์บอร์ด / เปียโน", area: "ลาดพร้าว · กรุงเทพฯ", date: "2026-10-25", time: "17:00", endTime: "20:00", rate: "คุยกันได้", details: "เล่น Pop, Jazz และเพลงงานแต่ง อ่าน lead sheet ได้", contact: "Line: keys.nut", age: "2 ชั่วโมงที่แล้ว" },
+  { id: "demo-5", kind: "looking", role: "Trio แจ๊ส · งานโรงแรม", area: "ปทุมวัน · กรุงเทพฯ", date: "2026-10-26", time: "20:30", endTime: "23:30", rate: "6,000 บาท / วง", details: "หาวง trio เล่น 2 เซต เซตละ 45 นาที มีเครื่องเสียงให้", contact: "ทักเพจ: Blue Note Bar", age: "3 ชั่วโมงที่แล้ว" },
+  { id: "demo-6", kind: "available", role: "มือกีตาร์ · Acoustic", area: "เชียงใหม่", date: "2026-10-26", time: "16:00", endTime: "19:00", rate: "2,000 บาทขึ้นไป", details: "รับงานร้านและ private event เล่นได้ทั้ง fingerstyle และร้องนำ", contact: "โทร 08x-xxx-xxxx", age: "เมื่อวาน" },
 ];
 
 const storageKey = "queuewang-listings-v1";
@@ -55,6 +55,7 @@ function mapDatabaseRow(row) {
     area: row.area,
     date: row.work_date,
     time: row.work_time ? row.work_time.slice(0, 5) : "",
+    endTime: row.work_end_time ? row.work_end_time.slice(0, 5) : "",
     rate: row.rate,
     details: row.details,
     contact: row.contact,
@@ -73,7 +74,7 @@ function relativeAge(value) {
 
 async function loadDatabaseListings() {
   const headers = { apikey: databaseKey, Authorization: `Bearer ${databaseKey}` };
-  const endpoint = `${databaseUrl}/rest/v1/gig_posts?select=id,kind,role,area,work_date,work_time,rate,details,contact,created_at&order=created_at.desc`;
+  const endpoint = `${databaseUrl}/rest/v1/gig_posts?select=id,kind,role,area,work_date,work_time,work_end_time,rate,details,contact,created_at&order=created_at.desc`;
   let response = await fetch(endpoint, { headers });
   if (!response.ok) {
     const legacyEndpoint = `${databaseUrl}/rest/v1/gig_posts?select=id,kind,role,area,work_date,rate,details,contact,created_at&order=created_at.desc`;
@@ -108,6 +109,7 @@ async function saveDatabaseListing(listing) {
       area: listing.area,
       work_date: listing.date,
       work_time: listing.time,
+      work_end_time: listing.endTime,
       rate: listing.rate,
       details: listing.details,
       contact: listing.contact,
@@ -147,11 +149,25 @@ function formatTime(value) {
   return value ? `${value.slice(0, 5)} น.` : "เวลาไม่ระบุ";
 }
 
-function matchesTimeRange(value, from, to) {
+function overlapsTimeRange(start, end, from, to) {
   if (!from && !to) return true;
-  if (!value) return false;
-  if (from && to && from > to) return value >= from || value <= to;
-  return (!from || value >= from) && (!to || value <= to);
+  if (!start || !end) return false;
+  const minutes = (value) => {
+    const [hours, mins] = value.split(":").map(Number);
+    return hours * 60 + mins;
+  };
+  const eventStart = minutes(start);
+  const eventEnd = minutes(end);
+  const eventIntervals = eventEnd > eventStart
+    ? [[eventStart, eventEnd]]
+    : [[eventStart, 1440], [0, eventEnd || 1440]];
+  const rangeStart = from ? minutes(from) : 0;
+  const rangeEnd = to ? minutes(to) + 1 : 1440;
+  const rangeIntervals = from && to && rangeEnd <= rangeStart
+    ? [[rangeStart, 1440], [0, rangeEnd]]
+    : [[rangeStart, Math.min(rangeEnd, 1440)]];
+  return eventIntervals.some(([eventFrom, eventTo]) =>
+    rangeIntervals.some(([rangeFrom, rangeTo]) => eventFrom < rangeTo && eventTo > rangeFrom));
 }
 
 function escapeHtml(value) {
@@ -165,7 +181,7 @@ function listingCard(item, index) {
   return `<article class="listing-card" style="animation-delay:${Math.min(index, 8) * 35}ms">
     <div><div class="card-topline"><span class="tag ${isLooking ? "tag-looking" : "tag-available"}"><span class="tag-symbol">${isLooking ? "↗" : "♪"}</span>${label}</span><span class="card-age">${escapeHtml(item.age || "เมื่อสักครู่")}</span></div>
       <h3>${escapeHtml(item.role)}</h3><p class="card-detail">${escapeHtml(item.area)}${item.details ? ` · ${escapeHtml(item.details)}` : ""}</p></div>
-    <div class="card-bottom"><span class="card-date">▦ ${formatDate(item.date)} · ${formatTime(item.time)}</span><span class="card-rate">${escapeHtml(item.rate || "คุยกันได้")}</span></div>
+    <div class="card-bottom"><span class="card-date">▦ ${formatDate(item.date)} · ${formatTime(item.time)}${item.endTime ? `–${formatTime(item.endTime)}` : ""}</span><span class="card-rate">${escapeHtml(item.rate || "คุยกันได้")}</span></div>
     <div class="card-contact">ติดต่อ: <span>${safeContact}</span></div>
   </article>`;
 }
@@ -178,7 +194,7 @@ function render() {
   const filtered = listings.filter((item) => {
     const matchesKind = selectedKind === "all" || item.kind === selectedKind;
     const searchable = `${item.role} ${item.area} ${item.time || ""} ${item.details}`.toLocaleLowerCase("th-TH");
-    return matchesKind && (!query || searchable.includes(query)) && (!date || item.date === date) && matchesTimeRange(item.time, timeFrom, timeTo);
+    return matchesKind && (!query || searchable.includes(query)) && (!date || item.date === date) && overlapsTimeRange(item.time, item.endTime, timeFrom, timeTo);
   });
   grid.innerHTML = filtered.map(listingCard).join("");
   grid.hidden = filtered.length === 0;
@@ -233,6 +249,7 @@ dialog.addEventListener("click", (event) => {
 
 form.elements.date.min = bangkokDateValue();
 form.elements.time.value = "19:00";
+form.elements.endTime.value = "22:00";
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   formError.hidden = true;
@@ -245,6 +262,7 @@ form.addEventListener("submit", async (event) => {
     area: values.get("area").trim(),
     date: values.get("date"),
     time: values.get("time"),
+    endTime: values.get("endTime"),
     rate: values.get("rate").trim() || "คุยกันได้",
     details: values.get("details").trim(),
     contact: values.get("contact").trim(),
@@ -270,6 +288,7 @@ form.addEventListener("submit", async (event) => {
     form.reset();
     form.elements.date.min = bangkokDateValue();
     form.elements.time.value = "19:00";
+    form.elements.endTime.value = "22:00";
     dialog.close();
     showToast(databaseReady ? "ลงประกาศแล้ว · แชร์ให้ทุกคนเห็น" : "ลงประกาศแล้ว · บันทึกไว้ในเบราว์เซอร์นี้");
     document.querySelector("#board").scrollIntoView({ behavior: "smooth" });
