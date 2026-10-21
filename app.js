@@ -8,6 +8,10 @@ const starterListings = [
 ];
 
 const storageKey = "queuewang-listings-v1";
+const databaseConfig = window.QUEUEWANG_SUPABASE || {};
+const databaseUrl = String(databaseConfig.url || "").replace(/\/$/, "");
+const databaseKey = String(databaseConfig.anonKey || "");
+const databaseReady = databaseUrl.startsWith("https://") && databaseKey.length > 0;
 const grid = document.querySelector("#listing-grid");
 const count = document.querySelector("#result-count");
 const emptyState = document.querySelector("#empty-state");
@@ -17,6 +21,9 @@ const filterSummary = document.querySelector("#filter-summary");
 const dialog = document.querySelector("#post-dialog");
 const form = document.querySelector("#post-form");
 const toast = document.querySelector("#toast");
+const databaseStatus = document.querySelector("#database-status");
+const formNote = document.querySelector("#form-note");
+const submitButton = form.querySelector('button[type="submit"]');
 let selectedKind = "all";
 let toastTimer;
 
@@ -30,6 +37,71 @@ function loadListings() {
 }
 
 let listings = loadListings();
+
+if (databaseReady) {
+  databaseStatus.textContent = "กำลังเชื่อมต่อฐานข้อมูล...";
+  formNote.textContent = "ประกาศจะเผยแพร่ให้ทุกคนเห็น และข้อมูลติดต่อจะเป็นสาธารณะ";
+}
+
+function mapDatabaseRow(row) {
+  return {
+    id: row.id,
+    kind: row.kind,
+    role: row.role,
+    area: row.area,
+    date: row.work_date,
+    rate: row.rate,
+    details: row.details,
+    contact: row.contact,
+    age: relativeAge(row.created_at),
+  };
+}
+
+function relativeAge(value) {
+  const minutes = Math.max(0, Math.floor((Date.now() - new Date(value).getTime()) / 60000));
+  if (minutes < 1) return "เมื่อสักครู่";
+  if (minutes < 60) return `${minutes} นาทีที่แล้ว`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} ชั่วโมงที่แล้ว`;
+  return `${Math.floor(hours / 24)} วันที่แล้ว`;
+}
+
+async function loadDatabaseListings() {
+  const endpoint = `${databaseUrl}/rest/v1/gig_posts?select=id,kind,role,area,work_date,rate,details,contact,created_at&order=created_at.desc`;
+  const response = await fetch(endpoint, { headers: { apikey: databaseKey, Authorization: `Bearer ${databaseKey}` } });
+  if (!response.ok) throw new Error(`โหลดประกาศไม่สำเร็จ (${response.status})`);
+  const rows = await response.json();
+  const remoteListings = rows.map(mapDatabaseRow);
+  const remoteIds = new Set(remoteListings.map((item) => item.id));
+  const localOnlyListings = listings.filter((item) => !String(item.id).startsWith("demo-") && !remoteIds.has(item.id));
+  listings = [...remoteListings, ...localOnlyListings, ...starterListings];
+  databaseStatus.textContent = "เชื่อมฐานข้อมูลแล้ว · แชร์ประกาศร่วมกัน";
+  render();
+}
+
+async function saveDatabaseListing(listing) {
+  const response = await fetch(`${databaseUrl}/rest/v1/gig_posts`, {
+    method: "POST",
+    headers: {
+      apikey: databaseKey,
+      Authorization: `Bearer ${databaseKey}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation",
+    },
+    body: JSON.stringify({
+      kind: listing.kind,
+      role: listing.role,
+      area: listing.area,
+      work_date: listing.date,
+      rate: listing.rate,
+      details: listing.details,
+      contact: listing.contact,
+    }),
+  });
+  if (!response.ok) throw new Error(`บันทึกไม่สำเร็จ (${response.status})`);
+  const [savedRow] = await response.json();
+  return mapDatabaseRow(savedRow);
+}
 
 function formatDate(value) {
   if (!value) return "วันที่ยังไม่ระบุ";
@@ -107,7 +179,7 @@ dialog.addEventListener("click", (event) => {
 });
 
 form.elements.date.min = new Date().toISOString().slice(0, 10);
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const values = new FormData(form);
   const listing = {
@@ -121,22 +193,38 @@ form.addEventListener("submit", (event) => {
     contact: values.get("contact").trim(),
     age: "เมื่อสักครู่",
   };
-  listings = [listing, ...listings];
+  submitButton.disabled = true;
+  submitButton.textContent = databaseReady ? "กำลังบันทึก..." : "กำลังลงประกาศ...";
   try {
-    const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
-    localStorage.setItem(storageKey, JSON.stringify([listing, ...saved]));
-  } catch {
-    showToast("บันทึกในเครื่องไม่สำเร็จ แต่ประกาศนี้ยังแสดงอยู่ชั่วคราว");
+    let savedListing = listing;
+    if (databaseReady) {
+      savedListing = await saveDatabaseListing(listing);
+    } else {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      localStorage.setItem(storageKey, JSON.stringify([listing, ...saved]));
+    }
+    listings = [savedListing, ...listings];
+    selectedKind = "all";
+    searchInput.value = "";
+    dateFilter.value = "";
+    document.querySelector('[data-kind="all"]').click();
+    form.reset();
+    form.elements.date.min = new Date().toISOString().slice(0, 10);
+    dialog.close();
+    showToast(databaseReady ? "ลงประกาศแล้ว · แชร์ให้ทุกคนเห็น" : "ลงประกาศแล้ว · บันทึกไว้ในเบราว์เซอร์นี้");
+    document.querySelector("#board").scrollIntoView({ behavior: "smooth" });
+  } catch (error) {
+    showToast(`${error.message} · ตรวจการตั้งค่า Supabase แล้วลองใหม่`);
+  } finally {
+    submitButton.disabled = false;
+    submitButton.innerHTML = 'ลงประกาศ <span>↗</span>';
   }
-  selectedKind = "all";
-  searchInput.value = "";
-  dateFilter.value = "";
-  document.querySelector('[data-kind="all"]').click();
-  form.reset();
-  form.elements.date.min = new Date().toISOString().slice(0, 10);
-  dialog.close();
-  showToast("ลงประกาศแล้ว · แสดงเฉพาะในเบราว์เซอร์นี้");
-  document.querySelector("#board").scrollIntoView({ behavior: "smooth" });
 });
 
 render();
+if (databaseReady) {
+  loadDatabaseListings().catch((error) => {
+    databaseStatus.textContent = "เชื่อมฐานข้อมูลไม่สำเร็จ";
+    showToast(`${error.message} · ตรวจ URL, anon key และ SQL policy`);
+  });
+}

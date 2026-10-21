@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f4f3ec" />
     <meta name="description" content="พื้นที่จับคู่งานดนตรีกับคนทำงาน ค้นหาตามวัน พื้นที่ และตำแหน่ง" />
-    <title>คิวว่าง | งานดนตรีใกล้ตัว</title>
+    <title>คิวว่าง | งานดนตรีใกล้ฉัน</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="supabase-config.js" defer></script>
     <script src="app.js" defer></script>
   </head>
   <body>
     <header class="topbar">
-      <a class="wordmark" href="#top" aria-label="คิวว่าง หน้าหลัก"><span class="wordmark-icon">ค</span><span>คิวว่าง<span class="wordmark-period">.</span></span></a>
+      <a class="wordmark" href="#top" aria-label="คิวว่าง หน้าหลัก"><span class="wordmark-icon">น</span><span>นักดนตรีโคราช<span class="wordmark-period">.</span></span></a>
       <nav class="top-nav" aria-label="เมนูหลัก">
         <a class="nav-active" href="#board">กระดานงาน</a>
         <a href="#how-it-works">เกี่ยวกับ</a>
@@ -62,7 +63,7 @@
           </div>
         </div>
 
-        <div class="board-meta"><span id="filter-summary">ประกาศทั้งหมด</span><span class="sort-label"><span class="live-dot"></span> ใหม่ล่าสุดก่อน</span></div>
+        <div class="board-meta"><span id="filter-summary">ประกาศทั้งหมด</span><span class="sort-label"><span class="live-dot"></span><span id="database-status">โหมดเดโม: ยังไม่ได้ตั้งค่าฐานข้อมูล</span></span></div>
         <div class="listing-grid" id="listing-grid" aria-live="polite"></div>
         <div class="empty-state" id="empty-state" hidden><span class="empty-symbol">∅</span><h3>ยังไม่เจอคิวนี้</h3><p>ลองเปลี่ยนคำค้น หรือเลือกวันที่อื่นดูนะ</p><button class="text-button" id="clear-filters">ล้างตัวกรอง <span>↗</span></button></div>
         <div class="board-footer"><span>ทุกจังหวะ เริ่มจากการเจอกัน</span><span class="footer-mark">คิวว่าง. <span>2026</span></span></div>
@@ -82,7 +83,7 @@
         <label class="form-label">ค่าจ้างโดยประมาณ<input name="rate" maxlength="50" placeholder="เช่น 2,000 บาท / คุยกันได้" /></label>
         <label class="form-label">รายละเอียด<textarea name="details" rows="3" maxlength="240" placeholder="แนวเพลง เวลา หรือรายละเอียดที่อยากบอก"></textarea></label>
         <label class="form-label">ช่องทางติดต่อ<input name="contact" required maxlength="100" placeholder="Facebook / Line / เบอร์โทร" /></label>
-        <p class="form-note">เดโมนี้เก็บประกาศไว้ในเบราว์เซอร์ของคุณเท่านั้น ยังไม่แสดงให้คนอื่นเห็น</p>
+        <p class="form-note" id="form-note">เมื่อตั้งค่าฐานข้อมูลแล้ว ประกาศจะมองเห็นได้โดยทุกคน ข้อมูลติดต่อจะเป็นสาธารณะ</p>
         <div class="dialog-actions"><button class="button button-outline" type="button" data-close-form>ยกเลิก</button><button class="button button-dark" type="submit">ลงประกาศ <span>↗</span></button></div>
       </form>
     </dialog>
